@@ -80,8 +80,15 @@ Row Level Security (RLS) policies are enabled to ensure users can only Select, I
 **Challenge:** Rendering timestamps (like "Created at...") on the server often leads to hydration errors because the server time differs slightly from the client's initial render time, or the user's local timezone isn't known during SSR.
 **Solution:** I used a client-side formatting approach. The raw timestamp is passed to the component, but the date string is only generated after the component has mounted on the client. This ensures the HTML matches exactly what React expects, preventing hydration warnings.
 
+### 4. Ensuring URL Reliability
+**Challenge:** The hardest part was ensuring that every bookmark saved is actually a working link. Initially, users could input anything, attempting to save broken or fake URLs which cluttered the app.
+**Solution:** To fix this, I built a **two-step verification system**:
+1.  **Frontend Check:** As the user types, the app instantly validates that the text is formatted like a proper URL (e.g., includes a domain).
+2.  **Backend "Ping":** Before saving, my server actually sends a quick request to that website to confirm it's live and reachable. If the site doesn't verify or load, the app blocks the bookmark.
+This ensures the database only ever contains valid, active bookmarks.
+
 ## License
 This project is licensed under the MIT License.
 
 ## Author
-**Sweeti2004** - *Built for Abstrabit Application Assessment*
+**Sweeti Kumari** - *Built for Abstrabit Application Assessment*
