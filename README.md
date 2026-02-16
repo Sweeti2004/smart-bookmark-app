@@ -70,18 +70,22 @@ Row Level Security (RLS) policies are enabled to ensure users can only Select, I
 
 ### 1. Real-time Subscription RLS Conflicts
 **Challenge:** While setting up real-time updates, I initially encountered an issue where updates for one user were being broadcast to all connected clients, regardless of ownership. This was a critical privacy flaw.
+
 **Solution:** I resolved this by enforcing Row Level Security (RLS) on the `realtime` publication in Supabase. I configured the client subscription to listen specifically to the `public` schema with a `filter` on the `user_id` column (`filter: 'user_id=eq.' + user.id`). This ensures that even the WebSocket events are strictly scoped to the authenticated user.
 
 ### 2. Preventing Duplicate Bookmarks on Multi-Tab Sync
 **Challenge:** When a user adds a bookmark in Tab A, the local state updates immediately. However, the real-time subscription also receives an `INSERT` event, which could potentially cause the same bookmark to appear twice in the list before the next fetch cycle.
+
 **Solution:** I implemented a strict state management strategy where the application relies primarily on the real-time subscription as the "source of truth" for new additions, rather than optimistically updating the UI for the adder. While this introduces a tiny latency (milliseconds), it guarantees absolute consistency across all tabs without complex de-duplication logic.
 
 ### 3. Handling Next.js Hydration Mismatches
 **Challenge:** Rendering timestamps (like "Created at...") on the server often leads to hydration errors because the server time differs slightly from the client's initial render time, or the user's local timezone isn't known during SSR.
+
 **Solution:** I used a client-side formatting approach. The raw timestamp is passed to the component, but the date string is only generated after the component has mounted on the client. This ensures the HTML matches exactly what React expects, preventing hydration warnings.
 
 ### 4. Ensuring URL Reliability
 **Challenge:** The hardest part was ensuring that every bookmark saved is actually a working link. Initially, users could input anything, attempting to save broken or fake URLs which cluttered the app.
+
 **Solution:** To fix this, I built a **two-step verification system**:
 1.  **Frontend Check:** As the user types, the app instantly validates that the text is formatted like a proper URL (e.g., includes a domain).
 2.  **Backend "Ping":** Before saving, my server actually sends a quick request to that website to confirm it's live and reachable. If the site doesn't verify or load, the app blocks the bookmark.
