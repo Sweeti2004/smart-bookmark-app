@@ -87,8 +87,5 @@ Row Level Security (RLS) policies are enabled to ensure users can only Select, I
 2.  **Backend "Ping":** Before saving, my server actually sends a quick request to that website to confirm it's live and reachable. If the site doesn't verify or load, the app blocks the bookmark.
 This ensures the database only ever contains valid, active bookmarks.
 
-## License
-This project is licensed under the MIT License.
-
 ## Author
 **Sweeti Kumari** - *Built for Abstrabit Application Assessment*
